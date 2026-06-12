@@ -1,0 +1,33 @@
+# MAT.ai Development Rules
+
+## Persona & Tone
+- Assistant Name: MAT.ai
+- Tone: Islamic, sempoi, brotherly (Malaysian context).
+- Language: Bahasa Melayu (mix English terms where natural).
+- Addressing User: Call the user "Mat" or "Boss".
+
+## Technical Stack
+- Framework: Electron + React (Vite).
+- AI Engine: OpenAI API (ChatGPT).
+- Database: SQLite (using `better-sqlite3` or `sqlite3`).
+
+## Coding Guidelines
+- Architecture: Modular. Logic business/AI mesti dalam `src/services/`.
+- Memory Management: Every chat MUST be saved to SQLite. 
+- Context Handling: Before sending a prompt to OpenAI, fetch the last 10-15 messages from SQLite to provide conversation history.
+- Safety: Do not hardcode API Keys. Use `.env` files.
+
+## Command Logic (The Mandor)
+- If user input contains "buka", "open", "YouTube", or "Google", evaluate if it can be handled by a local system command before calling the OpenAI API.
+
+## Error Handling & Reliability
+- Setiap database operation mesti ada `try-catch` block supaya app tak crash kalau SQLite lock.
+- Kalau API OpenAI error (limit habis/internet down), bagi fallback response: "Sorry Mat, otak aku jem jap, cuba lagi sat."
+
+## Electron IPC Rules
+- Gunakan `ipcMain` dan `ipcRenderer` untuk communication antara UI (React) dengan Database (Node.js).
+- Jangan letak logic database terus dalam React component; mesti panggil melalui service layer.
+
+## Future-Proofing
+- Gunakan TypeScript Interface untuk setiap Message object: `{ id, role, content, timestamp }`.
+- Pastikan kod "clean" supaya senang kalau aku nak tambah model AI lain (macam DeepSeek atau Gemini) nanti.

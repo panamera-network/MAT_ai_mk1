@@ -1,0 +1,88 @@
+.mat-wave-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.mat-wave-svg {
+    width: 100%;
+    height: auto;
+    transition: all 0.8s ease-in-out;
+}
+
+/* Rupa asal garisan wave */
+.wave-line {
+    fill: none;
+    stroke: url(#matGradient); /* Pakai gradien gambar kau mat */
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: all 0.8s ease-in-out;
+}
+
+.sub-path {
+    stroke-width: 3;
+}
+
+/* ==========================================
+   🔊 FASA BERCAKAP (ACTIVE - OMBAK BERGERAK)
+   ========================================== */
+.mat-wave-svg.active .main-path {
+    animation: alunanUtama 2s infinite ease-in-out;
+}
+
+.mat-wave-svg.active .sub-path {
+    animation: alunanSub 1.5s infinite ease-in-out;
+}
+
+@keyframes alunanUtama {
+    0%, 100% {
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 0;
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(-5px) scaleY(1.15); /* Ombak mengepak naik turun mat */
+    }
+}
+
+@keyframes alunanSub {
+    0%, 100% {
+        transform: translateY(0) scaleY(1);
+    }
+    50% {
+        transform: translateY(5px) scaleY(0.85); /* Garis second gerak berlawanan */
+    }
+}
+
+/* ==========================================
+   🤫 FASA DIAM (FLAT - JADI GARISAN LURUS)
+   ========================================== */
+.mat-wave-svg.flat {
+    transform: scaleY(0.05); /* Kita penyekkan SVG tu sampai jadi line lurus! */
+    filter: saturate(0.5); /* Kurangkan kepekatan warna masa diam */
+    opacity: 0.6;
+}
+
+.mat-wave-svg.flat .wave-line {
+    stroke-width: 2; /* Garisan jadi halus masa flat */
+}
+
+/* Teks bawah ombak */
+.mat-status-text {
+    margin-top: 10px;
+    font-family: monospace;
+    color: #00f2fe;
+    letter-spacing: 2px;
+    font-size: 12px;
+    text-transform: uppercase;
+    transition: color 0.5s;
+}
+
+.mat-wave-svg.flat + .mat-status-text {
+    color: #444; /* Tukar tulisan jadi gelap masa diam */
+}

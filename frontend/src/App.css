@@ -1,0 +1,493 @@
+/* --- 🎨 CONFIG THEME INDUK MAT.ai --- */
+:root {
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+/* 🌙 ALAM GELAP (Default / Asal) */
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #131314;               
+  --panel: #1e1e20;           
+  --border: #2c2c2e;          
+  --text: #e3e3e3;            
+  --muted: #b4b4b5;           
+  --accent: #7caaf8;          
+  --accent-2: #c5a3ff;        
+  --composer-bg: #1e1e20;     
+  --popover-bg: #282a2c;      
+  --item-hover: #37393b;      
+  --item-active: #004a77;     
+  --item-active-text: #c2e7ff;
+  --user-bubble: #282a2c;
+  --gradient-1: rgba(124, 170, 248, 0.07);
+  --gradient-2: rgba(197, 163, 255, 0.05);
+}
+
+/* ☀️ ALAM CERAH (Gemini Light Style) */
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #ffffff;               
+  --panel: #f0f4f9;           
+  --border: #deecf9;          
+  --text: #1f1f1f;            
+  --muted: #5f6368;           
+  --accent: #1a73e8;          
+  --accent-2: #7057ff;        
+  --composer-bg: #f0f4f9;     
+  --popover-bg: #ffffff;      
+  --item-hover: #e8f0fe;      
+  --item-active: #c2e7ff;     
+  --item-active-text: #001d35;
+  --user-bubble: #e3e3e3;
+  --gradient-1: rgba(26, 115, 232, 0.04);
+  --gradient-2: rgba(112, 87, 255, 0.03);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: radial-gradient(1000px 500px at 15% 0%, var(--gradient-1), transparent 50%),
+              radial-gradient(800px 400px at 85% 15%, var(--gradient-2), transparent 45%), 
+              var(--bg);
+  color: var(--text);
+  
+  /* 🎯 FIX 1: Matikan skrol luar pada body utama aplikasi supaya bar tebal luaran mati! */
+  overflow: hidden !important; 
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+#root {
+  height: 100%;
+}
+
+/* --- 📱 STRUKTUR UTAMA PLACEMENT BARU --- */
+.app-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow: hidden; /* 🎯 FIX 1.1: Pastikan shell luar tak melimpah skrol bar */
+}
+
+/* --- ⚙️ HEADER MINIMALIS (Kiri: Nama, Kanan: Gear) --- */
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand-name {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.settings-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.2s;
+}
+
+.settings-btn:hover {
+  background: var(--item-hover);
+}
+
+/* --- 🌊 PUSAT UTAMA (MatWave Center Menegak) --- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  min-height: 0;
+  width: 100%;
+  overflow: hidden; /* Tambah keselamatan ruang ombak */
+}
+
+.jarvis-container {
+  width: 100%;
+  max-width: 550px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Paparan Sembang Lama (Terapung Halus) */
+.chat-display-area {
+  width: 100%;
+  max-width: 720px;
+  max-height: 25vh; 
+  margin-top: 15px;
+}
+
+.bridge-banner {
+  border: 1px solid var(--border);
+  background: var(--composer-bg);
+  color: var(--accent);
+  border-radius: 12px;
+  padding: 8px 12px;
+  text-align: center;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* --- 💬 CHAT BUBBLES BLOCK (USER ADA BUBBLE, ASSISTANT MINIMALIS) --- */
+.chat-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 800px; 
+  margin: 0 auto;
+}
+
+.messages {
+  flex: 1;
+  min-height: 0;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px; 
+}
+
+/* Susunan Baris */
+.bubble-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* 👤 KALAU USER: Tolak ke KANAN */
+.bubble-row.user {
+  align-items: flex-end;
+}
+
+/* 🤖 KALAU ASSISTANT: Tolak ke KIRI */
+.bubble-row.assistant {
+  align-items: flex-start;
+}
+
+/* Nama Penanda ("You" atau "MAT.ai") */
+.bubble-meta {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+  padding: 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Sifat Asal Kotak Mesej */
+.bubble {
+  max-width: 75%; 
+  font-size: 15px;
+  line-height: 1.6;
+  word-break: break-word; 
+}
+
+/* 👤 REKAAN UTK USER (Kekalkan ada Bubble & Background) */
+.bubble-row.user .bubble {
+  background: var(--user-bubble);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  border-bottom-right-radius: 4px; 
+  padding: 12px 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* 🤖 REKAAN UTK ASSISTANT / MAT.ai (BUANG BUBBLE & BACKGROUND!) */
+.bubble-row.assistant .bubble {
+  background: transparent !important; 
+  border: none !important;             
+  box-shadow: none !important;         
+  color: var(--text);
+  padding: 4px 4px;                   
+  max-width: 100%;                     
+}
+
+.bubble-text {
+  white-space: pre-wrap;
+}
+
+/* --- 🎛️ COMPOSER BENTUK PIL (LOCK & FIX CLICKS) --- */
+.app-footer {
+  width: 100%;
+  padding-top: 10px;
+}
+
+.unified-input-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; 
+  background: var(--composer-bg);
+  border-radius: 32px; 
+  padding: 6px 8px 6px 16px; 
+  width: 100%;
+  max-width: 750px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  border: 1.5px solid var(--border); 
+  position: relative;
+}
+
+/* 🎯 KUNCI BELAH KIRI: Supaya dia ambik ruang baki sahaja, tak menceroboh ke kanan */
+.input-left-side {
+  display: flex;
+  align-items: center;
+  flex: 1; 
+  min-width: 0; /* PENTING: Menghalang input daripada melimpah keluar! */
+  gap: 12px;
+}
+
+/* Butang + (Kiri sekali) */
+.attach-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; /* Jangan bagi butang ni mengecil */
+}
+
+/* Input Teks */
+.main-chat-input {
+  width: 100%; 
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: var(--text);
+  padding: 8px 0;
+  flex: 1; /* Biar dia penuhi ruang kiri sahaja */
+}
+
+/* 🎯 KUNCI BELAH KANAN: Tempat berkumpul butang, paksa dia maintain saiz asli */
+.input-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0; /* PENTING: Jangan bagi flexbox penyekkan butang-butang ni! */
+  position: relative;
+  z-index: 999 !important; /* Paksa dia duduk lapisan paling atas sekali */
+}
+
+/* Badge Pilihan Model (Boleh Klik) */
+.model-badge-pill {
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer !important; /* Paksa keluar tangan tetikus */
+  user-select: none;
+}
+
+.model-badge-pill:hover {
+  background: var(--item-hover);
+}
+
+/* Butang Hantar Pesawat */
+.send-plane-btn {
+  background: none;
+  border: none;
+  cursor: pointer !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+
+.plane-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent);
+  pointer-events: none; /* Supaya klik tembus terus ke butang */
+}
+
+/* 🎯 MIC BULAT GRADIENT */
+.mic-wrapper-circular button {
+  background: linear-gradient(135deg, #00f2fe 0%, #ff007f 100%) !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 44px !important;
+  height: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: white !important;
+  cursor: pointer !important;
+  box-shadow: 0 3px 10px rgba(255, 0, 127, 0.25) !important;
+}
+
+.mic-wrapper-circular button:hover {
+  transform: scale(1.05);
+}
+
+/* --- 🌊 ENJIN ANIMASI SVG WAVE --- */
+.mat-wave-svg {
+  width: 100%;
+  height: auto;
+  transition: all 0.8s ease-in-out;
+}
+
+.wave-line {
+  fill: none;
+  stroke: url(#matGradient); 
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: all 0.8s ease-in-out;
+}
+
+.sub-path {
+  stroke-width: 3;
+}
+
+.mat-wave-svg.active .main-path {
+  animation: alunanUtama 2s infinite ease-in-out;
+}
+
+.mat-wave-svg.active .sub-path {
+  animation: alunanSub 1.5s infinite ease-in-out;
+}
+
+@keyframes alunanUtama {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-5px) scaleY(1.15); }
+}
+
+@keyframes alunanSub {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(5px) scaleY(0.85); }
+}
+
+.mat-wave-svg.flat {
+  transform: scaleY(0.05);
+  filter: saturate(0.5);
+  opacity: 0.6;
+}
+
+.mat-wave-svg.flat .wave-line {
+  stroke-width: 2;
+}
+
+.mat-status-text {
+  margin-top: 14px;
+  font-family: monospace;
+  color: var(--accent);
+  letter-spacing: 2px;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.mat-wave-svg.flat + .mat-status-text {
+  color: var(--muted);
+}
+
+.voice-error {
+  color: #ff4d4d;
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+/* 🎯 SKROLBAR HOVER REVEAL EFFECT (TERBUKTI BERKESAN SELEPAS FIX INDUK) */
+/* --- 🎯 FIX TERAKHIR: SKROLBAR HALIMUNAN, MUNCUL KELABU BILA HOVER --- */
+
+/* 1. Hidupkan balik keupayaan skrol & buang 'scrollbar-width: none' yang membunuh tu mat */
+/* --- 🎯 SOLUSI MUTLAK: HOVER EFFECT SCROLLBAR UNTUK ELECTRON --- */
+
+/* 1. Pastikan overflow dihidupkan */
+.messages,
+.chat-display-area {
+  overflow-y: auto !important;
+}
+
+/* 2. Set saiz batang skrolbar (Sengaja besarkan sikit ke 10px supaya senang nampak bila nampak) */
+.messages::-webkit-scrollbar,
+.chat-display-area::-webkit-scrollbar {
+  width: 10px !important;
+}
+
+/* 3. Tapak skrolbar sentiasa kosong/lutsinar */
+.messages::-webkit-scrollbar-track,
+.chat-display-area::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+/* 4. KEADAAN ASAL (Default): Kita bagi dia warna kelabu tapi opacity dia 0 (halimunan) 
+      Atau kita gunakan border tebal yang lutsinar untuk sorok dia */
+.messages::-webkit-scrollbar-thumb,
+.chat-display-area::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0) !important; /* Asal: Lutsinar penuh */
+  border-radius: 10px !important;
+  border: 2px solid transparent !important; /* Trick kunci dlm Electron */
+  background-clip: padding-box !important;
+  transition: background-color 0.2s ease-in-out !important;
+}
+
+/* 5. REAKSI HOVER (Tema Gelap): Bila mouse masuk kawasan chat, baru dia menyala lembut! */
+.messages:hover::-webkit-scrollbar-thumb,
+.chat-display-area:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.25) !important; /* Kelabu cyberpunk lembut mat */
+}
+
+/* 6. REAKSI HOVER (Tema Cerah): Kalau kau pakai Light mode */
+[data-theme="light"] .messages:hover::-webkit-scrollbar-thumb,
+[data-theme="light"] .chat-display-area:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.25) !important; /* Kelabu gelap lembut */
+}
+
+/* --- 🎛️ REKAAN BUTANG DALAM MODELSELECTOR POPUP KAU --- */
+.model-item-btn {
+  background: transparent;
+  border: none;
+  color: #b4b4b5; /* Warna muted lembut */
+  padding: 6px 10px;
+  text-align: left;
+  font-size: 13px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.model-item-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+/* 🎯 Gaya kalau butang model tu tengah aktif (dipilih) */
+.model-item-btn.active {
+  background: #004a77 !important; /* Warna biru pekat mat active */
+  color: #c2e7ff !important;
+  font-weight: bold;
+}

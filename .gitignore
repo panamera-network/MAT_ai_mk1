@@ -1,0 +1,11 @@
+# Node & Python junk
+node_modules/
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+db/                # Folder memori mem0 kita (jangan bagi naik!)
+api_output.wav     # Audio output jangan bagi naik
+kws_models/        # Model besar tak payah naik
+*.log

@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "jsx": "react-jsx",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "useDefineForClassFields": true,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["frontend/src/*"],
+      "@services/*": ["frontend/src/services/*"],
+      "@core/*": ["core/*"],
+      "@electron/*": ["electron/*"]
+    }
+  },
+  "include": [
+    "electron/**/*.ts",
+    "core/**/*.ts",
+    "shared/**/*.ts",
+    "shared/**/*.d.ts",
+    "services/**/*.ts",
+    "vite.config.ts",
+    "frontend/global.d.ts",
+    "frontend/src/**/*.ts",   // 🎯 TUKAR JADI INI (Sebab kod kau dlm frontend/src)
+    "frontend/src/**/*.tsx",
+    "global.d.ts"   // 🎯 TUKAR JADI INI mat!
+  ]
+}
