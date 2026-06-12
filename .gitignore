@@ -9,3 +9,4 @@ db/                # Folder memori mem0 kita (jangan bagi naik!)
 api_output.wav     # Audio output jangan bagi naik
 kws_models/        # Model besar tak payah naik
 *.log
+.DS_Store
