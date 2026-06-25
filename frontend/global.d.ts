@@ -21,14 +21,9 @@ interface CommandResponse {
   error?: string;
 }
 
-interface HistoryRow {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-interface HistoryResponse {
-  ok: boolean;
-  history?: HistoryRow[];
+interface OsStatusResponse {
+  online: boolean;
+  data?: Record<string, unknown>;
   error?: string;
 }
 
@@ -51,7 +46,8 @@ declare global {
       }): Promise<ChatResponse>;
 
       onStreamChunk(callback: (chunk: string) => void): () => void;
-      getHistory(limit?: number): Promise<HistoryResponse>;
+      newSession(): Promise<{ sessionId: string }>;
+      getOsStatus(): Promise<OsStatusResponse>;
       checkVoiceCapabilities(): Promise<{ whisper: boolean }>;
       transcribeAudio(audioBytes: Uint8Array): Promise<TranscribeResponse>;
       executeSystemCommand(action: string): Promise<CommandResponse>;

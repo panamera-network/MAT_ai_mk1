@@ -23,9 +23,9 @@ contextBridge.exposeInMainWorld('matAi', {
   
   speak: (text: string) => ipcRenderer.invoke('mat-ai:cakap', text),
 
-
-  // 3. Ambil sejarah chat dari database lokal
-  getHistory: (limit?: number) => ipcRenderer.invoke('mat-ai:get-history', limit),
+  // 3. Sesi sembang & status MAT-AI-OS backend
+  newSession: () => ipcRenderer.invoke('mat-ai:new-session'),
+  getOsStatus: () => ipcRenderer.invoke('mat-ai:os-status'),
 
   // 4. Utiliti Suara Whisper & Arahan Sistem
   checkVoiceCapabilities: () => ipcRenderer.invoke('mat-ai:voice-capabilities'),

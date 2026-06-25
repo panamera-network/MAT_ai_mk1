@@ -69,10 +69,8 @@ export const useChatLogic = (
     setInput('');
     setBusy(true);
 
-    const tutupWayarStream = api.onStreamChunk((perkataan: string) => {
-      setTurns((prev: ChatTurn[]) => prev.map(t => t.id === assistantTurnId ? { ...t, text: t.text + perkataan } : t));
-    });
-
+    // MAT-AI-OS's /task is a single request/response — no token-by-token streaming —
+    // so the assistant bubble is filled in once when the call resolves, not live.
     try {
       const cleanAttachmentPayload = attachment ? {
         type: 'image',
@@ -90,11 +88,12 @@ export const useChatLogic = (
 
       if (!result.ok) {
         setTurns((prev: ChatTurn[]) => prev.map(t => t.id === assistantTurnId ? { ...t, text: `MAT.ai Error: ${result.error}` } : t));
+      } else {
+        setTurns((prev: ChatTurn[]) => prev.map(t => t.id === assistantTurnId ? { ...t, text: result.text } : t));
       }
     } catch (err: any) {
       setTurns((prev: ChatTurn[]) => prev.map(t => t.id === assistantTurnId ? { ...t, text: `MAT.ai Crash: ${err.message || err}` } : t));
     } finally {
-      tutupWayarStream();
       setBusy(false);
     }
   }, [turns, busy, uiSelection, selectedLocalModel, setTurns, setBusy, setInput]);

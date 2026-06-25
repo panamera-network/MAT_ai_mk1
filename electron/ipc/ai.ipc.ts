@@ -1,8 +1,8 @@
 // D:\MAT_ai_mk1\electron\ipc\ai.ipc.ts
 import { ipcMain } from 'electron'
-import { matAiRouter, MatAiMode } from '@core/router/router' 
+import { matAiRouter, MatAiMode } from '@core/router/router'
+import { matOsClient } from '@core/os-client'
 import { transcribeAudioBuffer } from '../../core/voice/speechToText';
-import { getHistory } from '@core/services/db.service_old'
 import { speakText } from '../../core/voice/textToSpeech';
 
 function toUint8Array(payload: unknown): Uint8Array | null {
@@ -53,71 +53,47 @@ export function registerAiIpc(): void {
   )
 
 
-  // 💬 Handle Sistem Sembang & Core Router AI Utama (Fast/Brain Hybrid)
+  // 💬 Handle Sistem Sembang — semua AI calls pergi ke MAT-AI-OS (POST /task or /task/upload)
   ipcMain.handle(
   'mat-ai:chat',
   async (
-    _event, 
-    // 🎯 1. KEMAS KINI: Terima 'attachment' sekali dari frontend dalam destructuring
-    { userText, uiSelection, inputMode, localModelName = 'llama3.1:8b', attachment }: 
+    _event,
+    { userText, uiSelection, inputMode, localModelName, attachment }:
     { userText: string; uiSelection: MatAiMode; inputMode?: 'text' | 'voice' | 'image'; localModelName?: string; attachment?: any }
   ): Promise<{ ok: true; text: string; shouldSpeak?: boolean } | { ok: false; error: string }> => {
-    
+
     const trimmed = typeof userText === 'string' ? userText.trim() : ''
-    
-    // 🎯 2. KEMAS KINI: Kalau teks kosong TAPI ada attachment gambar, jangan sekat! Bagi lepas.
+
     if (!trimmed && !attachment) {
       return { ok: false, error: 'Mesej kosong, Boss.' }
     }
 
-    try {
-      // Maklumkan dekat terminal status attachment sekali
-      console.log(`📥 [IPC AI]: Mesej Masuk -> Mod: ${uiSelection} | Model: ${localModelName} | Input: ${inputMode} | Attachment: ${attachment ? attachment.name : 'Tiada'}`);
+    console.log(`📥 [IPC AI]: Mesej Masuk -> Mod: ${uiSelection} | Input: ${inputMode} | Attachment: ${attachment ? attachment.name : 'Tiada'}`);
 
-      // 🎯 3. KEMAS KINI ROUTER: Pass 'attachment' sebagai parameter ke-5 masuk ke router utama!
-      // Nota: Kita hantar 'trimmed' (teks) ATAU string kosong kalau user cuma hantar gambar sahaja.
-      const ayatPenuhAI = await matAiRouter(trimmed, uiSelection, _event, localModelName, attachment)
+    const result = await matAiRouter(trimmed, uiSelection, _event, localModelName, attachment)
 
-      // Tentukan sama ada MAT.ai perlu balas guna suara
-      const shouldSpeak = inputMode === 'voice'
-
-      // 👑 KUNCI UTAMA KAU KAT SINI MAT:
-      if (shouldSpeak) {
-        console.log("🎙️ [VOICE DETECTED]: Input dari suara. Memicu enjin Kokoro lokal...");
-        // Jalankan fungsi speakText secara 'floating' (tak payah await supaya stream teks kat UI tak sangkut/lag)
-        void speakText(ayatPenuhAI);
-      } else {
-        console.log("⌨️ [TEXT DETECTED]: User menaip/hantar gambar. Menyekat suara robot, Puck diam.");
-      }
-
-      return { 
-        ok: true, 
-        text: ayatPenuhAI, 
-        shouldSpeak 
-      }
-
-    } catch (err) {
-      const ralatSebenar = err instanceof Error ? err.message : String(err);
-      console.error("❌ [MAIN PROCESS CRASH]:", err);
-      return { ok: false, error: `Otak MAT.ai Sangkut: ${ralatSebenar}` };
+    if (!result.ok) {
+      console.error("❌ [MAT-AI-OS]:", result.error);
+      return { ok: false, error: result.error }
     }
+
+    const shouldSpeak = inputMode === 'voice'
+    if (shouldSpeak) {
+      console.log("🎙️ [VOICE DETECTED]: Input dari suara. Memicu enjin Kokoro lokal...");
+      void speakText(result.text);
+    }
+
+    return { ok: true, text: result.text, shouldSpeak }
   },
 )
 
-  // 📜 Handle Sejarah Chat Database
-  ipcMain.handle(
-    'mat-ai:get-history',
-    async (_event, limit = 15): Promise<{ ok: true; history: Array<{ role: 'user' | 'assistant'; content: string }>} | { ok: false; error: string }> => {
-      try {
-        const rows = await getHistory(limit)
-        const safeRows = Array.isArray(rows) ? rows : []
-        return {
-          ok: true,
-          history: safeRows.map((row: any) => ({ role: row.role, content: row.content })),
-        }
-      } catch (err) {
-        return { ok: false, error: err instanceof Error ? err.message : String(err) }
-      }
-    },
-  )
+  // 🆕 Mula sesi sembang baru (reset session_id supaya MAT-AI-OS tak bawa konteks lama)
+  ipcMain.handle('mat-ai:new-session', (): { sessionId: string } => {
+    return { sessionId: matOsClient.newSession() }
+  })
+
+  // 📡 Semak status MAT-AI-OS backend (GET /health)
+  ipcMain.handle('mat-ai:os-status', async () => {
+    return matOsClient.getStatus()
+  })
 }
