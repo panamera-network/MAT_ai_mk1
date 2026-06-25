@@ -9,11 +9,14 @@
     "electron:dev": "electron electron/main.ts",
     "build": "tsc --noEmit && vite build",
     "release": "electron-builder",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "desktop-mcp": "tsx core/desktop-mcp-server.ts"
   },
   "dependencies": {
     "axios": "^1.16.1",
+    "clipboardy": "^5.3.1",
     "dotenv": "^16.4.5",
+    "express": "^5.2.1",
     "node-audiorecorder": "^3.0.0",
     "node-record-lpcm16": "^1.0.1",
     "react": "^18.3.1",
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@electron/rebuild": "^4.0.4",
     "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.6",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^6.0.2",
@@ -30,6 +34,7 @@
     "electron-builder": "^26.8.1",
     "electron-rebuild": "^2.0.3",
     "esbuild": "^0.28.0",
+    "tsx": "^4.22.4",
     "typescript": "^5.6.3",
     "vite": "^8.0.13",
     "vite-plugin-electron": "^0.28.8",
