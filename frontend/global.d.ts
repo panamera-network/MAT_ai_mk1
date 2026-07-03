@@ -59,7 +59,7 @@ declare global {
 
   interface ChatTurn {
     id: string;
-    role: 'user' | 'assistant';
+    role: 'user' | 'assistant' | 'system';
     text: string;
     inputMode?: 'text' | 'voice' | 'image';
     attachment?: {

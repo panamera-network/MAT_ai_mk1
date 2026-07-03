@@ -167,12 +167,17 @@ useEffect(() => {
   // frontend/src/hooks/useMatAi/index.ts
 
 
+  // Mesej sistem (contoh: notifikasi signal dari Trading Workspace) terus ke chat
+  const pushSystemMessage = useCallback((text: string) => {
+    setTurns((prev: ChatTurn[]) => [...prev, { id: crypto.randomUUID(), role: 'system', text }]);
+  }, []);
+
   // 4. RETURN VALUE
   return {
     turns, busy, input, setInput, listening, voiceBusy, voiceError,
-    onMicToggle, sendWithText, uiSelection, setUiSelection, 
+    onMicToggle, sendWithText, uiSelection, setUiSelection,
     selectedLocalModel, setSelectedLocalModel, bridgeReady, micEngine,
-    analyserRef
+    analyserRef, pushSystemMessage
   };
 
   

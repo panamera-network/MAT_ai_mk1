@@ -109,6 +109,62 @@ body {
   background: var(--item-hover);
 }
 
+/* --- 📐 SPLIT LAYOUT: Workspace (kiri) | Chat (kanan) --- */
+.split-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  overflow: hidden;
+}
+
+.workspace-panel {
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.split-divider {
+  flex-shrink: 0;
+  width: 6px;
+  margin: 12px 4px;
+  border-radius: 3px;
+  cursor: col-resize;
+  background: var(--border);
+  transition: background 0.2s;
+}
+
+.split-divider:hover {
+  background: var(--accent);
+}
+
+.chat-side {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Dalam kolum chat kanan: ombak kecil di atas, chat isi ruang penuh */
+.chat-side .main-content {
+  justify-content: flex-start;
+}
+
+.chat-side .jarvis-container {
+  max-width: 300px;
+  flex-shrink: 0;
+}
+
+.chat-side .chat-display-area {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+}
+
 /* --- 🌊 PUSAT UTAMA (MatWave Center Menegak) --- */
 .main-content {
   flex: 1;
@@ -228,6 +284,26 @@ body {
 
 .bubble-text {
   white-space: pre-wrap;
+}
+
+/* ⚡ MESEJ SISTEM (notifikasi signal dari Trading Workspace) */
+.bubble-row.system {
+  align-items: flex-start;
+}
+
+.bubble-row.system .bubble-meta {
+  color: var(--accent);
+}
+
+.bubble-row.system .bubble {
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: var(--muted);
+  max-width: 100%;
 }
 
 /* --- 🎛️ COMPOSER BENTUK PIL (LOCK & FIX CLICKS) --- */

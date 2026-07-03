@@ -1,0 +1,313 @@
+/* --- 📊 TRADING WORKSPACE (panel kiri) --- */
+
+.trading-workspace {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 12px 4px 4px 0;
+}
+
+.ws-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ws-error {
+  border: 1px solid rgba(239, 83, 80, 0.5);
+  background: rgba(239, 83, 80, 0.1);
+  color: #ef5350;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* --- Symbol selector --- */
+.symbol-selector {
+  position: relative;
+}
+
+.symbol-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.symbol-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--item-active);
+  color: var(--item-active-text);
+  border-radius: 14px;
+  padding: 3px 6px 3px 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.chip-remove {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.chip-add {
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  border-radius: 14px;
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.chip-add:hover:not(:disabled) {
+  background: var(--item-hover);
+  color: var(--text);
+}
+
+.symbol-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 50;
+  width: 220px;
+  background: var(--popover-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.symbol-filter {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 6px 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.symbol-options {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.symbol-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.symbol-option:hover:not(:disabled) {
+  background: var(--item-hover);
+}
+
+.symbol-option.selected {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.symbol-option:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.symbol-empty,
+.symbol-hint {
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+  padding: 2px 0;
+}
+
+/* --- Bias table --- */
+.bias-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.bias-table th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bias-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.bias-table tbody tr {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.bias-table tbody tr:hover {
+  background: var(--item-hover);
+}
+
+.bias-table tbody tr.active {
+  background: var(--item-active);
+}
+
+.bias-table tbody tr.active .sym-cell {
+  color: var(--item-active-text);
+}
+
+.sym-cell {
+  font-weight: 700;
+}
+
+.muted-cell {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.error-cell {
+  color: #ef5350;
+  font-size: 12px;
+}
+
+.health-badge {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.decision-badge {
+  display: inline-block;
+  border-radius: 10px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.decision-badge small {
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.decision-badge.up {
+  background: rgba(38, 166, 154, 0.15);
+  color: #26a69a;
+}
+
+.decision-badge.down {
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+}
+
+.decision-badge.flat {
+  background: rgba(160, 160, 160, 0.15);
+  color: var(--muted);
+}
+
+/* --- Chart --- */
+.ws-chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ws-chart-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tf-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.tf-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tf-btn:hover {
+  background: var(--item-hover);
+  color: var(--text);
+}
+
+.tf-btn.active {
+  background: var(--item-active);
+  color: var(--item-active-text);
+  border-color: transparent;
+}
+
+.ws-chart-wrap {
+  flex: 1;
+  min-height: 220px;
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.ws-chart {
+  position: absolute;
+  inset: 0;
+}
+
+.ws-chart-legend {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  z-index: 5;
+  display: flex;
+  gap: 12px;
+  font-size: 10px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.legend-item.snr {
+  color: #26a69a;
+}
+
+.legend-item.ob {
+  color: rgba(239, 83, 80, 0.8);
+}
+
+.legend-item.fvg {
+  color: rgba(124, 170, 248, 0.9);
+}

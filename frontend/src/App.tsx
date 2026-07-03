@@ -1,23 +1,62 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useMatAi } from './hooks/useMatAi/index'
 import { ChatPanel } from './components/chat/ChatPanel'
 import { MicButton } from './components/voice/MicButton'
 import { MatWave } from './components/orb/MatWave'
+import { TradingWorkspace } from './components/workspace/TradingWorkspace'
 
 // 🎯 1. IMPORT KOMPONEN ASLI KAU MAT!
-import { ModelSelector } from './components/chat/ModelSelector' 
+import { ModelSelector } from './components/chat/ModelSelector'
 import './App.css'
+
+// Split default: 60% workspace (kiri) / 40% chat (kanan)
+const DEFAULT_WORKSPACE_PCT = 60
+const MIN_WORKSPACE_PCT = 25
+const MAX_WORKSPACE_PCT = 75
 
 export function App(): JSX.Element {
   const bottomRef = useRef<HTMLDivElement | null>(null)
   const [theme, setTheme] = useState<'dark' | 'light'>('dark')
   const [showModelMenu, setShowModelMenu] = useState<boolean>(false)
 
+  // 📐 Resizable split state
+  const [workspacePct, setWorkspacePct] = useState<number>(DEFAULT_WORKSPACE_PCT)
+  const splitRef = useRef<HTMLDivElement | null>(null)
+  const draggingRef = useRef(false)
+
+  const onDividerMouseDown = useCallback(() => {
+    draggingRef.current = true
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }, [])
+
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (!draggingRef.current || !splitRef.current) return
+      const rect = splitRef.current.getBoundingClientRect()
+      const pct = ((e.clientX - rect.left) / rect.width) * 100
+      setWorkspacePct(Math.min(MAX_WORKSPACE_PCT, Math.max(MIN_WORKSPACE_PCT, pct)))
+    }
+    const onUp = () => {
+      if (!draggingRef.current) return
+      draggingRef.current = false
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+    window.addEventListener('mousemove', onMove)
+    window.addEventListener('mouseup', onUp)
+    return () => {
+      window.removeEventListener('mousemove', onMove)
+      window.removeEventListener('mouseup', onUp)
+    }
+  }, [])
+
   // Ambil state penuh dari hook padu kau mat
   const {
   bridgeReady, input, setInput, turns, busy, voiceError, listening,
   voiceBusy, micEngine, onMicToggle, sendWithText,
-  uiSelection, setUiSelection, selectedLocalModel, setSelectedLocalModel
+  uiSelection, setUiSelection, selectedLocalModel, setSelectedLocalModel,
+  pushSystemMessage
 } = useMatAi()
 
   const micDisabled = !bridgeReady || voiceBusy || micEngine === 'none';
@@ -56,14 +95,28 @@ export function App(): JSX.Element {
         </button>
       </header>
 
+      {/* 📐 Split: Trading Workspace (kiri) | Chat (kanan) */}
+      <div className="split-container" ref={splitRef}>
+        <section className="workspace-panel" style={{ width: `${workspacePct}%` }}>
+          <TradingWorkspace onSignal={pushSystemMessage} />
+        </section>
+
+        <div
+          className="split-divider"
+          role="separator"
+          aria-orientation="vertical"
+          onMouseDown={onDividerMouseDown}
+        />
+
+        <section className="chat-side" style={{ width: `${100 - workspacePct}%` }}>
       {/* 🌊 Pusat Utama */}
       <main className="main-content">
         <div className="jarvis-container">
           {/* 🎯 KITA HANTAR 3 VARIABLE SEBENAR DARI HOOK KAU MAT */}
-          <MatWave 
-            listening={listening} 
-            busy={busy} 
-            voiceBusy={voiceBusy} 
+          <MatWave
+            listening={listening}
+            busy={busy}
+            voiceBusy={voiceBusy}
           />
         </div>
 
@@ -152,6 +205,8 @@ export function App(): JSX.Element {
 
         </div>
       </footer>
+        </section>
+      </div>
     </div>
   )
 }

@@ -30,7 +30,9 @@ export function ChatPanel({ turns, bottomRef }: ChatPanelProps): JSX.Element {
 
       {turns.map((t) => (
         <div key={t.id} className={`bubble-row ${t.role}`}>
-          <div className="bubble-meta">{t.role === 'user' ? 'You' : 'MAT.ai'}</div>
+          <div className="bubble-meta">
+            {t.role === 'user' ? 'You' : t.role === 'system' ? '⚡ Signal' : 'MAT.ai'}
+          </div>
           <div className={`bubble ${t.role}`}>
             
             {/* 📸 1. TAMBAH KAT SINI: Render gambar kalau objek attachment wujud */}
