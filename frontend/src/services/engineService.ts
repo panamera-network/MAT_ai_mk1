@@ -57,6 +57,23 @@ export interface SupplyDemandZone {
   timestamp: string
 }
 
+export interface StrategyInfo {
+  name: string
+  enabled: boolean
+}
+
+export interface StrategySignal {
+  strategy: string
+  symbol: string
+  timeframe: string
+  direction: string // 'long' | 'short'
+  reason?: string
+  confidence?: number
+  trigger?: string
+  timestamp?: string
+  price?: number
+}
+
 export interface SlimSymbolBlock {
   error?: string
   bias?: Record<string, BiasTf>
@@ -67,6 +84,7 @@ export interface SlimSymbolBlock {
   order_blocks?: Record<string, OrderBlock[]>
   fvg?: Record<string, Fvg[]>
   supply_demand_zones?: Record<string, SupplyDemandZone[]>
+  strategy_signals?: StrategySignal[]
 }
 
 export type SlimResponse = Record<string, SlimSymbolBlock>
@@ -104,6 +122,23 @@ export function fetchSlim(symbols: string[]): Promise<SlimResponse> {
 
 export function fetchHistory(symbol: string, timeframe: string, count = 200): Promise<HistoryResponse> {
   return getJson(`/history/${encodeURIComponent(symbol)}/${encodeURIComponent(timeframe)}?count=${count}`)
+}
+
+export function fetchStrategies(): Promise<{ strategies: StrategyInfo[] }> {
+  return getJson('/strategies')
+}
+
+/** Toggles strategy evaluation engine-side: disabled strategies emit no signals. */
+export async function setStrategyEnabled(name: string, enabled: boolean): Promise<StrategyInfo> {
+  const res = await fetch(`${ENGINE_BASE}/strategies/${encodeURIComponent(name)}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ enabled }),
+  })
+  if (!res.ok) {
+    throw new Error(`Engine ${res.status} toggling ${name}`)
+  }
+  return res.json() as Promise<StrategyInfo>
 }
 
 /** Shared bullish/bearish/neutral color coding for decisions and bias labels. */
