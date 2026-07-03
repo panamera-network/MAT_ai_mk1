@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const Waveform = ({ audioStream, isListening }: { audioStream: MediaStream | null, isListening: boolean }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,7 +25,7 @@ export const Waveform = ({ audioStream, isListening }: { audioStream: MediaStrea
       canvasCtx.fillStyle = '#10B981'; // Warna hijau "Mat"
 
       for (let i = 0; i < bufferLength; i++) {
-        const barHeight = (dataArray[i] / 255) * canvas.height;
+        const barHeight = ((dataArray[i] ?? 0) / 255) * canvas.height;
         canvasCtx.fillRect(i * 3, canvas.height - barHeight, 2, barHeight);
       }
     };

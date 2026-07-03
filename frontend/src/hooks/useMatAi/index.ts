@@ -3,7 +3,7 @@ import { useChatLogic } from './chatLogic';
 import { useVoiceLogic } from './voiceLogic';
 import { getMatAiApi } from './utils';
 import { createMicRecorder, isMicRecordingSupported } from '../../services/voiceRecorderService';
-import { createSpeechRecognizer, isSpeechRecognitionSupported } from '../../services/speechService';
+import { isSpeechRecognitionSupported } from '../../services/speechService';
 
 export function useMatAi() {
   // 1. STATE
@@ -20,7 +20,6 @@ export function useMatAi() {
   const micRecorderRef = useRef<ReturnType<typeof createMicRecorder> | null>(null);
   const recogRef = useRef<any>(null);
   const [voiceError, setVoiceError] = useState<string | null>(null);
-  const kwsRef = useRef<any>(null);
 
   // Support checks
   const webSpeechSupported = useMemo(() => isSpeechRecognitionSupported(), []);

@@ -7,7 +7,7 @@ let globalStopFn: (() => Promise<void>) | null = null;
 let vadTimeout: NodeJS.Timeout | null = null;
 let vadActive = false;
 
-export const useVoiceLogic = (sendWithText: any, setInput: any, setVoiceError: any, micRecorderRef: any, recogRef: any) => {
+export const useVoiceLogic = (sendWithText: any, setInput: any, setVoiceError: any, micRecorderRef: any, _recogRef: any) => {
   const [listening, setListening] = useState(false);
   const [voiceBusy, setVoiceBusy] = useState(false);
   const analyserRef = useRef<any>(null);
@@ -95,7 +95,7 @@ export const useVoiceLogic = (sendWithText: any, setInput: any, setVoiceError: a
       analyser.getByteFrequencyData(dataArray);
       let sum = 0;
       for (let i = 0; i < bufferLength; i++) {
-        sum += dataArray[i];
+        sum += dataArray[i] ?? 0;
       }
       const average = sum / bufferLength;
 

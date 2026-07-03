@@ -74,6 +74,7 @@ export function ChatInput({
       if (!target.files || target.files.length === 0) return;
 
       const fail = target.files[0];
+      if (!fail) return;
       const namaFail = fail.name;
       const ekstensi = namaFail.slice(namaFail.lastIndexOf('.')).toLowerCase();
       const reader = new FileReader();
@@ -105,7 +106,6 @@ export function ChatInput({
 
   const handleMesejHantar = () => {
     console.log("🚀 MAT.ai Debug: Butang enter diketuk! Input semasa ialah:", input, "| Status busy ialah:", busy);
-    const textTerkini = input.trim();
     if (!input.trim() && !attachment) return;
     
     // Hantar data ke fail induk

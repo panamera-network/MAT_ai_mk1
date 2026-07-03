@@ -1,5 +1,5 @@
 // frontend/src/components/orb/MatWave.tsx
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // Setup Data Statik Mengikut Siri Waveform Kau Mat
 const STATES = ["idle", "listening", "thinking"] as const;
@@ -12,7 +12,7 @@ function easeInOut(x: number): number {
 }
 function lerp(a: number, b: number, t: number): number { return a + (b - a) * t; }
 function lerpColor(c1: string, c2: string, t: number): string {
-  const h = (s: string) => [parseInt(s.slice(1,3),16), parseInt(s.slice(3,5),16), parseInt(s.slice(5,7),16)];
+  const h = (s: string): [number, number, number] => [parseInt(s.slice(1,3),16), parseInt(s.slice(3,5),16), parseInt(s.slice(5,7),16)];
   const [r1,g1,b1] = h(c1), [r2,g2,b2] = h(c2);
   return `#${Math.round(lerp(r1,r2,t)).toString(16).padStart(2,"0")}${Math.round(lerp(g1,g2,t)).toString(16).padStart(2,"0")}${Math.round(lerp(b1,b2,t)).toString(16).padStart(2,"0")}`;
 }
@@ -54,7 +54,7 @@ function getCirclePoints(time: number, W: number, H: number, COUNT: number) {
 
 function lerpPoints(a: {x:number, y:number}[], b: {x:number, y:number}[], t: number) {
   return a.map((pa, i) => {
-    const pb = b[Math.min(i, b.length - 1)];
+    const pb = b[Math.min(i, b.length - 1)] ?? pa;
     return { x: lerp(pa.x, pb.x, t), y: lerp(pa.y, pb.y, t) };
   });
 }
@@ -85,12 +85,17 @@ function buildSegmentPaths(pts: {x:number, y:number}[], minW: number, maxW: numb
     // Sediakan ketebalan min & max yang ideal
     const sw = lerp(minW, maxW, env);
 
-    let d = `M ${pts[i0].x.toFixed(1)} ${pts[i0].y.toFixed(1)}`;
+    const p0 = pts[i0];
+    if (!p0) continue;
+    let d = `M ${p0.x.toFixed(1)} ${p0.y.toFixed(1)}`;
+    let prevPt = p0;
     for (let k = i0 + 1; k <= i1; k++) {
-      if (!pts[k]) continue;
-      const mx = (pts[k-1].x + pts[k].x) / 2;
-      const my = (pts[k-1].y + pts[k].y) / 2;
-      d += ` Q ${pts[k-1].x.toFixed(1)} ${pts[k-1].y.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+      const pk = pts[k];
+      if (!pk) continue;
+      const mx = (prevPt.x + pk.x) / 2;
+      const my = (prevPt.y + pk.y) / 2;
+      d += ` Q ${prevPt.x.toFixed(1)} ${prevPt.y.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+      prevPt = pk;
     }
     paths.push({ d, sw, prog });
   }
@@ -138,14 +143,14 @@ export function MatWave({ listening, busy, voiceBusy }: MatWaveProps): JSX.Eleme
       if (morphRef.current < 1) morphRef.current = Math.min(1, morphRef.current + 0.014);
 
       const ease = easeInOut(morphRef.current);
-      const cur  = STATES[stateIdx];
-      const prev = STATES[prevIdxRef.current];
+      const cur  = STATES[stateIdx] ?? "idle";
+      const prev = STATES[prevIdxRef.current] ?? "idle";
       const t    = timeRef.current;
       const morphDone = morphRef.current >= 0.98;
 
       const stopsA = getGradientStops(prev);
       const stopsB = getGradientStops(cur);
-      const stops  = stopsA.map((c, i) => lerpColor(c, stopsB[i], ease));
+      const stops  = stopsA.map((c, i) => lerpColor(c, stopsB[i] ?? c, ease)) as [string, string, string];
       
       [grad1Ref, grad2Ref, grad3Ref].forEach(ref => {
         if (!ref.current) return;

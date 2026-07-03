@@ -1,5 +1,4 @@
 // frontend/src/components/voice/MicButton.tsx
-import React from 'react';
 import './MicButton.css'; // Kita akan buat fail CSS ni jap lagi mat!
 
 interface MicButtonProps {

@@ -92,7 +92,9 @@ export function createSpeechRecognizer(
     callbacks.onListeningChange?.(false)
   }
 
-  recognition.onresult = (event: SpeechRecognitionEvent) => {
+  // Web Speech API event types (SpeechRecognitionEvent / SpeechRecognitionErrorEvent)
+  // are not in TS's DOM lib — the recognizer itself is already an untyped ctor above.
+  recognition.onresult = (event: any) => {
     const firstResult = event.results[0]
     if (!firstResult || !firstResult[0]) {
       state = 'idle'
@@ -107,7 +109,7 @@ export function createSpeechRecognizer(
     callbacks.onListeningChange?.(false)
   }
 
-  recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+  recognition.onerror = (event: any) => {
     state = 'idle'
     callbacks.onListeningChange?.(false)
     callbacks.onError?.(describeSpeechError(event.error))

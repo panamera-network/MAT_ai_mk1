@@ -1,6 +1,4 @@
 // frontend/src/components/chat/ModelSelector.tsx
-import React from 'react'
-
 interface ModelSelectorProps {
   currentMode: 'FAST_LOCAL' | 'FAST_CLOUD' | 'BRAIN'
   selectedLocalModel: string
