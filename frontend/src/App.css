@@ -286,6 +286,155 @@ body {
   white-space: pre-wrap;
 }
 
+/* 💡 KAD CADANGAN TRADE (Approve / Reject) */
+.trade-suggestion-card {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent-2);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 12px 14px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.tsc-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tsc-direction {
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 6px;
+  padding: 2px 8px;
+}
+
+.tsc-direction.up {
+  background: rgba(38, 166, 154, 0.15);
+  color: #26a69a;
+}
+
+.tsc-direction.down {
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+}
+
+.tsc-symbol {
+  font-weight: 700;
+}
+
+.tsc-confidence {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 11px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1px 8px;
+}
+
+.tsc-levels {
+  display: flex;
+  gap: 14px;
+}
+
+.tsc-level {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.tsc-level span {
+  font-size: 9px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tsc-level strong {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tsc-level strong.up {
+  color: #26a69a;
+}
+
+.tsc-level strong.down {
+  color: #ef5350;
+}
+
+.tsc-reason {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.tsc-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.tsc-btn {
+  flex: 1;
+  border-radius: 8px;
+  padding: 7px 0;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.tsc-btn.approve {
+  background: rgba(38, 166, 154, 0.18);
+  color: #26a69a;
+  border: 1px solid rgba(38, 166, 154, 0.5);
+}
+
+.tsc-btn.approve:hover:not(:disabled) {
+  background: rgba(38, 166, 154, 0.3);
+}
+
+.tsc-btn.reject {
+  background: rgba(239, 83, 80, 0.12);
+  color: #ef5350;
+  border: 1px solid rgba(239, 83, 80, 0.4);
+}
+
+.tsc-btn.reject:hover:not(:disabled) {
+  background: rgba(239, 83, 80, 0.25);
+}
+
+.tsc-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.tsc-status {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tsc-status.approved {
+  color: #26a69a;
+}
+
+.tsc-status.rejected {
+  color: var(--muted);
+}
+
+.tsc-status.failed {
+  color: #cccc00;
+}
+
+.tsc-message {
+  font-size: 11px;
+  color: var(--muted);
+}
+
 /* ⚡ MESEJ SISTEM (notifikasi signal dari Trading Workspace) */
 .bubble-row.system {
   align-items: flex-start;

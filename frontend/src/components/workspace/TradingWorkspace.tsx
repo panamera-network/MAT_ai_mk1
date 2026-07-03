@@ -18,6 +18,7 @@ import {
   type SlimResponse,
   type StrategyInfo,
 } from '@services/engineService'
+import { suggestTrade, type TradeSuggestion } from '@services/tradingService'
 import './workspace.css'
 
 const TIMEFRAMES = ['M1', 'M5', 'M15', 'M30', 'H1', 'H4', 'D1'] as const
@@ -26,6 +27,7 @@ const DEFAULT_SYMBOLS = ['XAUUSD_i']
 
 interface TradingWorkspaceProps {
   onSignal: (text: string) => void
+  onSuggestion: (suggestion: TradeSuggestion) => void
 }
 
 interface SignalSnapshot {
@@ -34,7 +36,7 @@ interface SignalSnapshot {
   swing?: string
 }
 
-export function TradingWorkspace({ onSignal }: TradingWorkspaceProps): JSX.Element {
+export function TradingWorkspace({ onSignal, onSuggestion }: TradingWorkspaceProps): JSX.Element {
   const [allSymbols, setAllSymbols] = useState<string[]>([])
   const [selected, setSelected] = useState<string[]>(DEFAULT_SYMBOLS)
   const [activeSymbol, setActiveSymbol] = useState<string | null>(DEFAULT_SYMBOLS[0] ?? null)
@@ -77,6 +79,25 @@ export function TradingWorkspace({ onSignal }: TradingWorkspaceProps): JSX.Eleme
   const handleStrategiesChange = (next: StrategyInfo[]) => {
     setStrategies(next)
     setRefreshTick((t) => t + 1) // re-fetch signals under the new strategy set now
+  }
+
+  // 💡 Ask the OS analyst for a trade plan on the active symbol → card in chat
+  const [suggesting, setSuggesting] = useState(false)
+  const handleSuggest = async () => {
+    if (!activeSymbol || suggesting) return
+    setSuggesting(true)
+    try {
+      const result = await suggestTrade(activeSymbol)
+      if (result.status === 'no_setup') {
+        onSignal(`💡 ${activeSymbol}: no trade setup — ${result.reason}`)
+      } else {
+        onSuggestion(result as TradeSuggestion)
+      }
+    } catch (err) {
+      onSignal(`💡 Suggestion failed for ${activeSymbol}: ${(err as Error).message}`)
+    } finally {
+      setSuggesting(false)
+    }
   }
 
   // 30s auto-refresh heartbeat
@@ -230,6 +251,15 @@ export function TradingWorkspace({ onSignal }: TradingWorkspaceProps): JSX.Eleme
 
         <div className="ws-chart-header">
           <span className="ws-chart-title">{activeSymbol ?? 'No symbol'}</span>
+          <button
+            type="button"
+            className="suggest-btn"
+            disabled={!activeSymbol || suggesting}
+            onClick={() => void handleSuggest()}
+            title="Ask MAT.ai's analyst for a trade plan on this symbol"
+          >
+            {suggesting ? '🧠 Analyzing…' : '💡 Suggest trade'}
+          </button>
           <div className="tf-selector">
             {TIMEFRAMES.map((tf) => (
               <button

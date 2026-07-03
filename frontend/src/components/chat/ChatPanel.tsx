@@ -1,5 +1,6 @@
 // frontend/src/components/chat/ChatPanel.tsx
 import React from 'react'
+import { TradeSuggestionCard } from './TradeSuggestionCard'
 
 interface ChatPanelProps {
   turns: ChatTurn[]
@@ -31,8 +32,12 @@ export function ChatPanel({ turns, bottomRef }: ChatPanelProps): JSX.Element {
       {turns.map((t) => (
         <div key={t.id} className={`bubble-row ${t.role}`}>
           <div className="bubble-meta">
-            {t.role === 'user' ? 'You' : t.role === 'system' ? '⚡ Signal' : 'MAT.ai'}
+            {t.role === 'user' ? 'You' : t.suggestion ? '💡 Trade Suggestion' : t.role === 'system' ? '⚡ Signal' : 'MAT.ai'}
           </div>
+
+          {/* 💡 Kad cadangan trade dengan butang Approve/Reject — ganti bubble biasa */}
+          {t.suggestion && <TradeSuggestionCard suggestion={t.suggestion} />}
+          {!t.suggestion && (
           <div className={`bubble ${t.role}`}>
             
             {/* 📸 1. TAMBAH KAT SINI: Render gambar kalau objek attachment wujud */}
@@ -66,6 +71,7 @@ export function ChatPanel({ turns, bottomRef }: ChatPanelProps): JSX.Element {
             {/* 2. Teks asal sembang kau */}
             <div className="bubble-text">{t.text}</div>
           </div>
+          )}
         </div>
       ))}
       <div ref={bottomRef} />

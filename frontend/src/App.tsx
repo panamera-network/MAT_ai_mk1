@@ -56,7 +56,7 @@ export function App(): JSX.Element {
   bridgeReady, input, setInput, turns, busy, voiceError, listening,
   voiceBusy, micEngine, onMicToggle, sendWithText,
   uiSelection, setUiSelection, selectedLocalModel, setSelectedLocalModel,
-  pushSystemMessage
+  pushSystemMessage, pushSuggestionCard
 } = useMatAi()
 
   const micDisabled = !bridgeReady || voiceBusy || micEngine === 'none';
@@ -98,7 +98,7 @@ export function App(): JSX.Element {
       {/* 📐 Split: Trading Workspace (kiri) | Chat (kanan) */}
       <div className="split-container" ref={splitRef}>
         <section className="workspace-panel" style={{ width: `${workspacePct}%` }}>
-          <TradingWorkspace onSignal={pushSystemMessage} />
+          <TradingWorkspace onSignal={pushSystemMessage} onSuggestion={pushSuggestionCard} />
         </section>
 
         <div

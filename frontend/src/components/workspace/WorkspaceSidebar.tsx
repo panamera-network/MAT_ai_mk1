@@ -8,10 +8,15 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { StrategyPanel } from './StrategyPanel'
 import { TradesPanel } from './TradesPanel'
+import { HistoryPanel } from './HistoryPanel'
 import type { StrategyInfo } from '@services/engineService'
 import {
   fetchPositions,
+  fetchTradeHistory,
+  fetchTradeStats,
   fetchTradingContext,
+  type TradeRecord,
+  type TradeStats,
   type TradingAccount,
   type TradingPosition,
 } from '@services/tradingService'
@@ -25,7 +30,7 @@ interface WorkspaceSidebarProps {
   onError: (message: string) => void
 }
 
-type DrawerId = 'strategies' | 'trades'
+type DrawerId = 'strategies' | 'trades' | 'history'
 
 function fmt(n: number | undefined): string {
   if (n === undefined) return '—'
@@ -39,6 +44,8 @@ export function WorkspaceSidebar({ strategies, onStrategiesChange, onError }: Wo
   const [stale, setStale] = useState(false)
   const [positions, setPositions] = useState<TradingPosition[]>([])
   const [tradingOffline, setTradingOffline] = useState(false)
+  const [history, setHistory] = useState<TradeRecord[]>([])
+  const [stats, setStats] = useState<TradeStats | null>(null)
 
   useEffect(() => {
     localStorage.setItem(COLLAPSE_KEY, collapsed ? '1' : '0')
@@ -64,6 +71,20 @@ export function WorkspaceSidebar({ strategies, onStrategiesChange, onError }: Wo
         })
         .catch(() => {
           /* offline state already flagged by the context fetch */
+        })
+      fetchTradeHistory()
+        .then((r) => {
+          if (!cancelled) setHistory(r.trades)
+        })
+        .catch(() => {
+          /* same */
+        })
+      fetchTradeStats()
+        .then((s) => {
+          if (!cancelled) setStats(s)
+        })
+        .catch(() => {
+          /* same */
         })
     }
     load()
@@ -122,6 +143,14 @@ export function WorkspaceSidebar({ strategies, onStrategiesChange, onError }: Wo
             <span className="sb-badge">{positions.length}</span>
           </button>
         )}
+        <button
+          type="button"
+          className="sb-icon-btn"
+          title={`Trade history (${history.length})`}
+          onClick={() => expandTo('history')}
+        >
+          📜
+        </button>
       </aside>
     )
   }
@@ -174,6 +203,15 @@ export function WorkspaceSidebar({ strategies, onStrategiesChange, onError }: Wo
           <TradesPanel positions={positions} currency={account?.currency ?? ''} />
         </Drawer>
       )}
+
+      <Drawer
+        title="History"
+        badge={String(history.length)}
+        open={openDrawers.has('history')}
+        onToggle={() => toggleDrawer('history')}
+      >
+        <HistoryPanel trades={history} stats={stats} />
+      </Drawer>
     </aside>
   )
 }

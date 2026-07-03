@@ -67,6 +67,9 @@ declare global {
       name: string;
       url: string;
     };
+    // Trade suggestion payload — when set, ChatPanel renders an Approve/Reject
+    // card instead of a plain bubble (shape: tradingService.TradeSuggestion)
+    suggestion?: import('./src/services/tradingService').TradeSuggestion;
   }
 }
 

@@ -171,12 +171,17 @@ useEffect(() => {
     setTurns((prev: ChatTurn[]) => [...prev, { id: crypto.randomUUID(), role: 'system', text }]);
   }, []);
 
+  // Kad cadangan trade (Approve/Reject) dari Trading Workspace terus ke chat
+  const pushSuggestionCard = useCallback((suggestion: NonNullable<ChatTurn['suggestion']>) => {
+    setTurns((prev: ChatTurn[]) => [...prev, { id: crypto.randomUUID(), role: 'system', text: '', suggestion }]);
+  }, []);
+
   // 4. RETURN VALUE
   return {
     turns, busy, input, setInput, listening, voiceBusy, voiceError,
     onMicToggle, sendWithText, uiSelection, setUiSelection,
     selectedLocalModel, setSelectedLocalModel, bridgeReady, micEngine,
-    analyserRef, pushSystemMessage
+    analyserRef, pushSystemMessage, pushSuggestionCard
   };
 
   
