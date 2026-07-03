@@ -31,10 +31,11 @@ export function StrategyPanel({ strategies, onChange, onError }: StrategyPanelPr
 
   return (
     <div className="strategy-panel">
-      <div className="strategy-panel-title">Strategies</div>
       {!strategies.length && <div className="strategy-empty">No strategies loaded</div>}
       {strategies.map((s) => (
-        <label key={s.name} className="strategy-row" title={s.name}>
+        // div, not label: a label forwards clicks on the name text to the
+        // button, making accidental toggles far too easy
+        <div key={s.name} className="strategy-row" title={s.name}>
           <span className={`strategy-name${s.enabled ? ' on' : ''}`}>{strategyDisplayName(s.name)}</span>
           <button
             type="button"
@@ -45,7 +46,7 @@ export function StrategyPanel({ strategies, onChange, onError }: StrategyPanelPr
           >
             <span className="strategy-knob" />
           </button>
-        </label>
+        </div>
       ))}
       <div className="strategy-hint">Active strategies emit ⚡ signals to chat</div>
     </div>

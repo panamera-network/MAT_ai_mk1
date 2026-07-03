@@ -7,7 +7,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { SymbolSelector } from './SymbolSelector'
 import { BiasTable } from './BiasTable'
 import { PriceChart } from './PriceChart'
-import { StrategyPanel, strategyDisplayName } from './StrategyPanel'
+import { strategyDisplayName } from './StrategyPanel'
+import { WorkspaceSidebar } from './WorkspaceSidebar'
 import {
   fetchHistory,
   fetchSlim,
@@ -212,6 +213,12 @@ export function TradingWorkspace({ onSignal }: TradingWorkspaceProps): JSX.Eleme
 
   return (
     <div className="trading-workspace">
+      <WorkspaceSidebar
+        strategies={strategies}
+        onStrategiesChange={handleStrategiesChange}
+        onError={setEngineError}
+      />
+
       <div className="ws-main">
         <div className="ws-toolbar">
           <SymbolSelector allSymbols={allSymbols} selected={selected} onChange={handleSelectionChange} />
@@ -246,14 +253,6 @@ export function TradingWorkspace({ onSignal }: TradingWorkspaceProps): JSX.Eleme
           </div>
         </div>
       </div>
-
-      <aside className="ws-sidebar">
-        <StrategyPanel
-          strategies={strategies}
-          onChange={handleStrategiesChange}
-          onError={setEngineError}
-        />
-      </aside>
     </div>
   )
 }
