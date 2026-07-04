@@ -3,7 +3,7 @@ import { useMatAi } from './hooks/useMatAi/index'
 import { ChatPanel } from './components/chat/ChatPanel'
 import { MicButton } from './components/voice/MicButton'
 import { MatWave } from './components/orb/MatWave'
-import { TradingWorkspace } from './components/workspace/TradingWorkspace'
+import { WorkspaceController } from './components/workspace/WorkspaceController'
 
 // 🎯 1. IMPORT KOMPONEN ASLI KAU MAT!
 import { ModelSelector } from './components/chat/ModelSelector'
@@ -98,7 +98,7 @@ export function App(): JSX.Element {
       {/* 📐 Split: Trading Workspace (kiri) | Chat (kanan) */}
       <div className="split-container" ref={splitRef}>
         <section className="workspace-panel" style={{ width: `${workspacePct}%` }}>
-          <TradingWorkspace onSignal={pushSystemMessage} onSuggestion={pushSuggestionCard} />
+          <WorkspaceController onSignal={pushSystemMessage} onSuggestion={pushSuggestionCard} />
         </section>
 
         <div
