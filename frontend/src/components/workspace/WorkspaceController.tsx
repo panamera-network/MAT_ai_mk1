@@ -6,7 +6,8 @@
 
 import { useEffect, useState } from 'react'
 import { TradingWorkspace } from './TradingWorkspace'
-import { CreatorWorkspace, SMEWorkspace, StudentWorkspace } from './PlaceholderWorkspaces'
+import { CreatorWorkspace } from './CreatorWorkspace'
+import { SMEWorkspace, StudentWorkspace } from './PlaceholderWorkspaces'
 import { fetchIdentity, resolvePersona, type Persona } from '@services/identityService'
 import type { TradeSuggestion } from '@services/tradingService'
 
@@ -39,7 +40,7 @@ export function WorkspaceController({ onSignal, onSuggestion }: WorkspaceControl
 
   switch (persona) {
     case 'creator':
-      return <CreatorWorkspace />
+      return <CreatorWorkspace onSignal={onSignal} />
     case 'sme':
       return <SMEWorkspace />
     case 'student':

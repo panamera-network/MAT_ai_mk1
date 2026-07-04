@@ -841,3 +841,343 @@
 .legend-item.fvg {
   color: rgba(124, 170, 248, 0.9);
 }
+
+/* --- 🎬 CREATOR WORKSPACE --- */
+.creator-workspace {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  min-width: 0;
+  overflow: hidden;
+  padding: 12px 4px 4px 0;
+}
+
+.creator-sidebar {
+  width: 210px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  padding-right: 10px;
+}
+
+.cw-sidebar-head {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.creator-project-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.creator-empty {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.creator-project-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--text);
+}
+
+.creator-project-row:hover {
+  border-color: var(--accent);
+}
+
+.creator-project-row.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.creator-project-title {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.creator-project-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.creator-project-type {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.creator-status-badge {
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 1px 8px;
+}
+
+.creator-status-badge.status-draft {
+  background: rgba(139, 139, 158, 0.18);
+  color: var(--muted);
+}
+
+.creator-status-badge.status-in_progress {
+  background: rgba(245, 158, 11, 0.18);
+  color: #f59e0b;
+}
+
+.creator-status-badge.status-ready {
+  background: rgba(38, 166, 154, 0.18);
+  color: #26a69a;
+}
+
+.creator-status-badge.status-published {
+  background: rgba(124, 170, 248, 0.18);
+  color: rgba(124, 170, 248, 0.95);
+}
+
+.creator-new-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed var(--border);
+  color: var(--muted);
+  border-radius: 10px;
+  padding: 7px 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.creator-new-btn:hover {
+  background: var(--item-hover);
+  color: var(--text);
+}
+
+.creator-new-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.creator-new-form input,
+.creator-new-form select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  outline: none;
+}
+
+.creator-new-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.creator-new-actions button {
+  flex: 1;
+  background: var(--item-active);
+  color: var(--item-active-text);
+  border: none;
+  border-radius: 8px;
+  padding: 6px 0;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.creator-new-actions button.ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.creator-new-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Main area */
+.cw-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.cw-empty {
+  margin: auto;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.cw-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cw-run-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  background: var(--panel);
+}
+
+.creator-goal-input {
+  width: 100%;
+  min-height: 56px;
+  resize: vertical;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 8px;
+  outline: none;
+}
+
+.creator-output-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.creator-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+
+/* Output card grid */
+.creator-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.creator-output-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 110px;
+}
+
+.creator-output-card.state-completed {
+  border-color: rgba(38, 166, 154, 0.4);
+}
+
+.creator-output-card.state-failed {
+  border-color: rgba(239, 83, 80, 0.4);
+}
+
+.creator-output-card.state-pending {
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.creator-card-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.creator-card-icon {
+  font-size: 13px;
+}
+
+.creator-card-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.creator-card-status {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+.creator-card-status.status-completed {
+  color: #26a69a;
+  background: rgba(38, 166, 154, 0.15);
+}
+
+.creator-card-status.status-failed {
+  color: #ef5350;
+  background: rgba(239, 83, 80, 0.15);
+}
+
+.creator-card-status.status-pending {
+  color: #f59e0b;
+  background: rgba(245, 158, 11, 0.15);
+}
+
+.creator-card-empty {
+  color: var(--muted);
+  font-size: 11px;
+  font-style: italic;
+}
+
+.creator-card-note {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.creator-card-error {
+  color: #ef5350;
+  font-size: 11px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.creator-card-script {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text);
+  white-space: pre-wrap;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.creator-card-media {
+  width: 100%;
+  max-height: 140px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--bg);
+}
+
+.creator-card-audio {
+  width: 100%;
+}

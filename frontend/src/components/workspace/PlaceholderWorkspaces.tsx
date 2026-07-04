@@ -1,6 +1,7 @@
 // frontend/src/components/workspace/PlaceholderWorkspaces.tsx
-// Placeholder workspaces for the non-trader personas. Same left-panel slot as
-// TradingWorkspace; real implementations replace these one by one.
+// Placeholder workspaces for personas without a real implementation yet
+// (sme, student). Same left-panel slot as TradingWorkspace/CreatorWorkspace;
+// each gets replaced with a real implementation in turn.
 
 interface PlaceholderProps {
   icon: string
@@ -22,17 +23,6 @@ function PlaceholderWorkspace({ icon, title, blurb, planned }: PlaceholderProps)
       </ul>
       <div className="pw-note">Coming soon — chat works as usual on the right.</div>
     </div>
-  )
-}
-
-export function CreatorWorkspace(): JSX.Element {
-  return (
-    <PlaceholderWorkspace
-      icon="🎨"
-      title="Creator Workspace"
-      blurb="Content pipeline for creators — planned surface for this panel:"
-      planned={['Content calendar & drafts', 'Asset library', 'Publishing queue', 'Engagement analytics']}
-    />
   )
 }
 
