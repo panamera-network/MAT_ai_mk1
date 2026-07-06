@@ -10,9 +10,10 @@
 //
 // Run standalone: npm run desktop-mcp
 
-import { exec } from 'node:child_process';
+import 'dotenv/config';
+import { exec, execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { readFile, rm } from 'node:fs/promises';
+import { mkdir, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
@@ -22,8 +23,29 @@ import express, { type Request, type Response } from 'express';
 const PORT = Number(process.env.DESKTOP_MCP_PORT || 8881);
 const PROTOCOL_VERSION = '2024-11-05';
 
+// Real sandboxing for execute_terminal_command: every command now runs inside a
+// throwaway Docker container instead of directly on the host. Previously this was
+// raw child_process.exec() with the same privileges as this whole Electron app (full
+// desktop access) — the regex denylist below was the ONLY defense, confirmed
+// bypassable (e.g. "del /Q /F" without "/s", "rm -r -f" with a space, PowerShell
+// "Remove-Item -Recurse -Force" all slip past it). The denylist stays as an extra
+// layer (defense-in-depth, same philosophy as mat-ai-os's core/mcp_approvals.py) —
+// it's just no longer the only thing standing between a command and the real
+// filesystem.
+//
+// SANDBOX_WORKSPACE_ROOT is scoped per user_id (SANDBOX_WORKSPACE_ROOT/{user_id}/)
+// even though only one user exists today — this is the concrete lever for an eventual
+// multi-user upgrade without rearchitecting.
+const SANDBOX_IMAGE = process.env.SANDBOX_IMAGE || 'mat-ai-sandbox:latest';
+const SANDBOX_WORKSPACE_ROOT = process.env.SANDBOX_WORKSPACE_ROOT || path.join(os.homedir(), 'mat-ai-sandbox-workspaces');
+const SANDBOX_TIMEOUT_MS = Number(process.env.SANDBOX_TIMEOUT_MS || 120_000);
+const SANDBOX_MEMORY = process.env.SANDBOX_MEMORY || '512m';
+const SANDBOX_CPUS = process.env.SANDBOX_CPUS || '1';
+const DEFAULT_USER_ID = 'farez';
+
 // Blocked command patterns — checked as a case-insensitive substring/regex match
-// against the raw command string before it ever reaches a shell.
+// against the raw command string before it ever reaches a shell. Applied BEFORE the
+// command ever reaches Docker (a command blocked here never even gets a container).
 const BLOCKED_COMMAND_PATTERNS: RegExp[] = [
   /rmdir\s+\/s/i,
   /del\s+\/f\s+\/s/i,
@@ -51,7 +73,10 @@ const TOOLS: ToolDefinition[] = [
   {
     name: 'execute_terminal_command',
     description:
-      'Run a shell command on the desktop. Destructive commands are refused: rmdir /s, del /f /s, format, shutdown, rm -rf.',
+      'Run a shell command inside an isolated Docker sandbox (a per-user scoped workspace directory, no network access, git/node/npm/python/pip/pytest available — see docker/sandbox.Dockerfile). Destructive commands are still refused: rmdir /s, del /f /s, format, shutdown, rm -rf.',
+    // user_id isn't part of this schema (it's not something the LLM should choose —
+    // mat-ai-os's own call construction supplies it), but the runtime args object may
+    // still carry one; callTool() reads args.user_id if present.
     inputSchema: { type: 'object', properties: { command: { type: 'string' } }, required: ['command'] },
   },
   {
@@ -127,13 +152,45 @@ function takeScreenshot(): Promise<Buffer> {
   });
 }
 
-function executeTerminalCommand(command: string): Promise<string> {
+async function executeTerminalCommand(command: string, userId: string = DEFAULT_USER_ID): Promise<string> {
   if (isBlockedCommand(command)) {
-    return Promise.reject(new Error(`Blocked: "${command}" matches a destructive-command pattern and was refused.`));
+    throw new Error(`Blocked: "${command}" matches a destructive-command pattern and was refused.`);
   }
 
+  const workspace = path.join(SANDBOX_WORKSPACE_ROOT, userId);
+  await mkdir(workspace, { recursive: true });
+
+  // --network none: no network access at all in v1 (npm install/pip install/git
+  // clone won't work inside the sandbox yet — a known, documented limitation, not a
+  // silent gap; commands operating on code already on disk, e.g. git status, pytest,
+  // npm test, work fine). "docker" itself is deliberately not in the sandbox's own
+  // toolchain (see docker/sandbox.Dockerfile) — a sandboxed command must never be
+  // able to invoke docker, which would allow mounting the Docker socket and escaping
+  // the sandbox entirely.
+  const dockerArgs = [
+    'run',
+    '--rm',
+    '--network',
+    'none',
+    '--memory',
+    SANDBOX_MEMORY,
+    '--cpus',
+    SANDBOX_CPUS,
+    '-v',
+    `${workspace}:/workspace`,
+    '-w',
+    '/workspace',
+    SANDBOX_IMAGE,
+    'sh',
+    '-c',
+    command,
+  ];
+
+  // execFile (argv array), not exec (shell string) — command reaches the container's
+  // "sh -c" as a single argv element, no manual shell-quoting of an arbitrary user
+  // command needed (and no risk of getting that quoting subtly wrong).
   return new Promise((resolve, reject) => {
-    exec(command, { timeout: 30_000 }, (error, stdout, stderr) => {
+    execFile('docker', dockerArgs, { timeout: SANDBOX_TIMEOUT_MS }, (error, stdout, stderr) => {
       if (error) {
         reject(new Error(stderr || error.message));
         return;
@@ -148,8 +205,10 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
     case 'open_application':
       return { message: await openApplication(String(args.name ?? '')) };
 
-    case 'execute_terminal_command':
-      return { output: await executeTerminalCommand(String(args.command ?? '')) };
+    case 'execute_terminal_command': {
+      const userId = typeof args.user_id === 'string' && args.user_id ? args.user_id : DEFAULT_USER_ID;
+      return { output: await executeTerminalCommand(String(args.command ?? ''), userId) };
+    }
 
     case 'get_clipboard':
       return { text: await clipboard.read() };
