@@ -13,12 +13,15 @@
 import 'dotenv/config';
 import { exec, execFile } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { mkdir, readFile, rm } from 'node:fs/promises';
+import { access, mkdir, readFile, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import process from 'node:process';
+import { promisify } from 'node:util';
 import clipboard from 'clipboardy';
 import express, { type Request, type Response } from 'express';
+
+const execFileAsync = promisify(execFile);
 
 const PORT = Number(process.env.DESKTOP_MCP_PORT || 8881);
 const PROTOCOL_VERSION = '2024-11-05';
@@ -42,6 +45,13 @@ const SANDBOX_TIMEOUT_MS = Number(process.env.SANDBOX_TIMEOUT_MS || 120_000);
 const SANDBOX_MEMORY = process.env.SANDBOX_MEMORY || '512m';
 const SANDBOX_CPUS = process.env.SANDBOX_CPUS || '1';
 const DEFAULT_USER_ID = 'farez';
+
+// Self-heal v2: prepare_repo_workspace clones/refreshes a local, offline copy of this
+// path into the sandbox so the coding agent can propose and test a real fix against
+// real source, without ever touching the real repo itself (git clone/fetch only reads
+// it). No hardcoded fallback — a machine-specific path belongs in .env only, same
+// convention as every other config value in this file.
+const MAT_AI_OS_REPO_PATH = process.env.MAT_AI_OS_REPO_PATH;
 
 // Blocked command patterns — checked as a case-insensitive substring/regex match
 // against the raw command string before it ever reaches a shell. Applied BEFORE the
@@ -92,6 +102,15 @@ const TOOLS: ToolDefinition[] = [
   {
     name: 'take_screenshot',
     description: 'Capture the current screen and return it as a base64-encoded PNG.',
+    inputSchema: { type: 'object', properties: {} },
+  },
+  {
+    name: 'prepare_repo_workspace',
+    description:
+      "Clone-or-refresh a local, offline copy of the mat-ai-os source repo into this user's " +
+      'sandbox workspace (appears as /workspace/mat-ai-os to execute_terminal_command). Safe: ' +
+      'only ever reads the real repo (git clone/fetch, never push), and only writes into the ' +
+      'disposable sandbox workspace.',
     inputSchema: { type: 'object', properties: {} },
   },
 ];
@@ -200,6 +219,44 @@ async function executeTerminalCommand(command: string, userId: string = DEFAULT_
   });
 }
 
+async function pathExists(target: string): Promise<boolean> {
+  try {
+    await access(target);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function prepareRepoWorkspace(userId: string = DEFAULT_USER_ID): Promise<string> {
+  if (!MAT_AI_OS_REPO_PATH) {
+    throw new Error('MAT_AI_OS_REPO_PATH is not configured (set it in .env).');
+  }
+
+  const workspace = path.join(SANDBOX_WORKSPACE_ROOT, userId);
+  await mkdir(workspace, { recursive: true });
+  const target = path.join(workspace, 'mat-ai-os');
+
+  const alreadyCloned = await pathExists(path.join(target, '.git'));
+  if (!alreadyCloned) {
+    // --no-hardlinks is NOT optional — a hardlinked local clone would make an "edit"
+    // inside the sandbox mutate the SAME bytes as the real host source file, silently
+    // defeating the entire point of a disposable sandbox. Costs a full object copy
+    // instead of a hardlink; fine for a repo this size.
+    await execFileAsync('git', ['clone', '--local', '--no-hardlinks', MAT_AI_OS_REPO_PATH, target], {
+      timeout: SANDBOX_TIMEOUT_MS,
+    });
+    return 'Cloned a fresh copy of mat-ai-os into the sandbox (/workspace/mat-ai-os).';
+  }
+
+  // Refresh: only ever pulls in the real repo's currently-COMMITTED state (git fetch
+  // never sees the host's uncommitted working-tree edits) — origin is
+  // MAT_AI_OS_REPO_PATH from the initial --local clone above.
+  await execFileAsync('git', ['-C', target, 'fetch', 'origin'], { timeout: SANDBOX_TIMEOUT_MS });
+  await execFileAsync('git', ['-C', target, 'reset', '--hard', 'FETCH_HEAD'], { timeout: SANDBOX_TIMEOUT_MS });
+  return "Refreshed the sandboxed copy of mat-ai-os to match the real repo's current commit.";
+}
+
 async function callTool(name: string, args: Record<string, unknown>): Promise<unknown> {
   switch (name) {
     case 'open_application':
@@ -220,6 +277,11 @@ async function callTool(name: string, args: Record<string, unknown>): Promise<un
     case 'take_screenshot': {
       const buffer = await takeScreenshot();
       return { image_base64: buffer.toString('base64'), format: 'png' };
+    }
+
+    case 'prepare_repo_workspace': {
+      const userId = typeof args.user_id === 'string' && args.user_id ? args.user_id : DEFAULT_USER_ID;
+      return { message: await prepareRepoWorkspace(userId) };
     }
 
     default:
@@ -277,5 +339,7 @@ app.post('/', async (req: Request<unknown, unknown, JsonRpcRequest>, res: Respon
 
 app.listen(PORT, '127.0.0.1', () => {
   console.log(`🖥️  [DESKTOP MCP SERVER]: Listening on http://127.0.0.1:${PORT}`);
-  console.log('   Tools: open_application, execute_terminal_command, get_clipboard, set_clipboard, take_screenshot');
+  console.log(
+    '   Tools: open_application, execute_terminal_command, get_clipboard, set_clipboard, take_screenshot, prepare_repo_workspace',
+  );
 });
